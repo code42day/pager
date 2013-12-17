@@ -1,0 +1,10 @@
+.pager {
+  counter-reset: page-counter;
+}
+.pager > a {
+  counter-increment: page_counter;
+  cursor: pointer;
+}
+.pager > a:before {
+  content: counter(page_counter);
+}

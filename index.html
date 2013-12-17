@@ -1,0 +1,55 @@
+<html>
+  <head>
+    <title>Pager</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="./build/build.css" rel="stylesheet" type="text/css">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        padding: 4em;
+      }
+      .pager {
+        margin: 1em 0;
+      }
+      .pager a {
+        display: inline-block;
+        margin: 2px;
+        padding: 5px;
+      }
+      .numeric a {
+        background-color: #fafafa;
+      }
+      .pager .inactive {
+        color: #ccc;
+      }
+      .symbolic {
+        font-size: 1.5em;
+      }
+      .symbolic > .active:before {
+        content: '⚫';
+      }
+      .symbolic > .inactive:before {
+        content: '⚪';
+      }
+    </style>
+  </head>
+  <body>
+    <div class="pager numeric"></div>
+    <div class="pager symbolic"></div>
+    <p>Page selected: [<span class='page'>select page</span>]<p>
+    <script src="build/build.js"></script>
+    <script>
+      var pager = require('pager');
+      var numeric = pager(document.querySelector('.numeric')).total(5).render();
+      var symbolic = pager(document.querySelector('.symbolic')).total(5).render();
+      function on(page) {
+        document.querySelector('.page').innerText = page;
+      }
+      numeric.on('show', on);
+      symbolic.on('show', on);
+    </script>
+  </body>
+</html>
