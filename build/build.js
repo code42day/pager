@@ -259,7 +259,10 @@ function el(tag, content, attrs) {\n\
 }//@ sourceURL=code42day-el/index.js"
 ));
 require.register("component-event/index.js", Function("exports, require, module",
-"\n\
+"var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',\n\
+    unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',\n\
+    prefix = bind !== 'addEventListener' ? 'on' : '';\n\
+\n\
 /**\n\
  * Bind `el` event `type` to `fn`.\n\
  *\n\
@@ -272,11 +275,8 @@ require.register("component-event/index.js", Function("exports, require, module"
  */\n\
 \n\
 exports.bind = function(el, type, fn, capture){\n\
-  if (el.addEventListener) {\n\
-    el.addEventListener(type, fn, capture);\n\
-  } else {\n\
-    el.attachEvent('on' + type, fn);\n\
-  }\n\
+  el[bind](prefix + type, fn, capture || false);\n\
+\n\
   return fn;\n\
 };\n\
 \n\
@@ -292,310 +292,10 @@ exports.bind = function(el, type, fn, capture){\n\
  */\n\
 \n\
 exports.unbind = function(el, type, fn, capture){\n\
-  if (el.removeEventListener) {\n\
-    el.removeEventListener(type, fn, capture);\n\
-  } else {\n\
-    el.detachEvent('on' + type, fn);\n\
-  }\n\
+  el[unbind](prefix + type, fn, capture || false);\n\
+\n\
   return fn;\n\
-};\n\
-//@ sourceURL=component-event/index.js"
-));
-require.register("component-query/index.js", Function("exports, require, module",
-"function one(selector, el) {\n\
-  return el.querySelector(selector);\n\
-}\n\
-\n\
-exports = module.exports = function(selector, el){\n\
-  el = el || document;\n\
-  return one(selector, el);\n\
-};\n\
-\n\
-exports.all = function(selector, el){\n\
-  el = el || document;\n\
-  return el.querySelectorAll(selector);\n\
-};\n\
-\n\
-exports.engine = function(obj){\n\
-  if (!obj.one) throw new Error('.one callback required');\n\
-  if (!obj.all) throw new Error('.all callback required');\n\
-  one = obj.one;\n\
-  exports.all = obj.all;\n\
-  return exports;\n\
-};\n\
-//@ sourceURL=component-query/index.js"
-));
-require.register("component-matches-selector/index.js", Function("exports, require, module",
-"/**\n\
- * Module dependencies.\n\
- */\n\
-\n\
-var query = require('query');\n\
-\n\
-/**\n\
- * Element prototype.\n\
- */\n\
-\n\
-var proto = Element.prototype;\n\
-\n\
-/**\n\
- * Vendor function.\n\
- */\n\
-\n\
-var vendor = proto.matches\n\
-  || proto.webkitMatchesSelector\n\
-  || proto.mozMatchesSelector\n\
-  || proto.msMatchesSelector\n\
-  || proto.oMatchesSelector;\n\
-\n\
-/**\n\
- * Expose `match()`.\n\
- */\n\
-\n\
-module.exports = match;\n\
-\n\
-/**\n\
- * Match `el` to `selector`.\n\
- *\n\
- * @param {Element} el\n\
- * @param {String} selector\n\
- * @return {Boolean}\n\
- * @api public\n\
- */\n\
-\n\
-function match(el, selector) {\n\
-  if (vendor) return vendor.call(el, selector);\n\
-  var nodes = query.all(selector, el.parentNode);\n\
-  for (var i = 0; i < nodes.length; ++i) {\n\
-    if (nodes[i] == el) return true;\n\
-  }\n\
-  return false;\n\
-}\n\
-//@ sourceURL=component-matches-selector/index.js"
-));
-require.register("component-delegate/index.js", Function("exports, require, module",
-"\n\
-/**\n\
- * Module dependencies.\n\
- */\n\
-\n\
-var matches = require('matches-selector')\n\
-  , event = require('event');\n\
-\n\
-/**\n\
- * Delegate event `type` to `selector`\n\
- * and invoke `fn(e)`. A callback function\n\
- * is returned which may be passed to `.unbind()`.\n\
- *\n\
- * @param {Element} el\n\
- * @param {String} selector\n\
- * @param {String} type\n\
- * @param {Function} fn\n\
- * @param {Boolean} capture\n\
- * @return {Function}\n\
- * @api public\n\
- */\n\
-\n\
-exports.bind = function(el, selector, type, fn, capture){\n\
-  return event.bind(el, type, function(e){\n\
-    if (matches(e.target, selector)) fn(e);\n\
-  }, capture);\n\
-  return callback;\n\
-};\n\
-\n\
-/**\n\
- * Unbind event `type`'s callback `fn`.\n\
- *\n\
- * @param {Element} el\n\
- * @param {String} type\n\
- * @param {Function} fn\n\
- * @param {Boolean} capture\n\
- * @api public\n\
- */\n\
-\n\
-exports.unbind = function(el, type, fn, capture){\n\
-  event.unbind(el, type, fn, capture);\n\
-};\n\
-//@ sourceURL=component-delegate/index.js"
-));
-require.register("component-events/index.js", Function("exports, require, module",
-"\n\
-/**\n\
- * Module dependencies.\n\
- */\n\
-\n\
-var events = require('event');\n\
-var delegate = require('delegate');\n\
-\n\
-/**\n\
- * Expose `Events`.\n\
- */\n\
-\n\
-module.exports = Events;\n\
-\n\
-/**\n\
- * Initialize an `Events` with the given\n\
- * `el` object which events will be bound to,\n\
- * and the `obj` which will receive method calls.\n\
- *\n\
- * @param {Object} el\n\
- * @param {Object} obj\n\
- * @api public\n\
- */\n\
-\n\
-function Events(el, obj) {\n\
-  if (!(this instanceof Events)) return new Events(el, obj);\n\
-  if (!el) throw new Error('element required');\n\
-  if (!obj) throw new Error('object required');\n\
-  this.el = el;\n\
-  this.obj = obj;\n\
-  this._events = {};\n\
-}\n\
-\n\
-/**\n\
- * Subscription helper.\n\
- */\n\
-\n\
-Events.prototype.sub = function(event, method, cb){\n\
-  this._events[event] = this._events[event] || {};\n\
-  this._events[event][method] = cb;\n\
-};\n\
-\n\
-/**\n\
- * Bind to `event` with optional `method` name.\n\
- * When `method` is undefined it becomes `event`\n\
- * with the \"on\" prefix.\n\
- *\n\
- * Examples:\n\
- *\n\
- *  Direct event handling:\n\
- *\n\
- *    events.bind('click') // implies \"onclick\"\n\
- *    events.bind('click', 'remove')\n\
- *    events.bind('click', 'sort', 'asc')\n\
- *\n\
- *  Delegated event handling:\n\
- *\n\
- *    events.bind('click li > a')\n\
- *    events.bind('click li > a', 'remove')\n\
- *    events.bind('click a.sort-ascending', 'sort', 'asc')\n\
- *    events.bind('click a.sort-descending', 'sort', 'desc')\n\
- *\n\
- * @param {String} event\n\
- * @param {String|function} [method]\n\
- * @return {Function} callback\n\
- * @api public\n\
- */\n\
-\n\
-Events.prototype.bind = function(event, method){\n\
-  var e = parse(event);\n\
-  var el = this.el;\n\
-  var obj = this.obj;\n\
-  var name = e.name;\n\
-  var method = method || 'on' + name;\n\
-  var args = [].slice.call(arguments, 2);\n\
-\n\
-  // callback\n\
-  function cb(){\n\
-    var a = [].slice.call(arguments).concat(args);\n\
-    obj[method].apply(obj, a);\n\
-  }\n\
-\n\
-  // bind\n\
-  if (e.selector) {\n\
-    cb = delegate.bind(el, e.selector, name, cb);\n\
-  } else {\n\
-    events.bind(el, name, cb);\n\
-  }\n\
-\n\
-  // subscription for unbinding\n\
-  this.sub(name, method, cb);\n\
-\n\
-  return cb;\n\
-};\n\
-\n\
-/**\n\
- * Unbind a single binding, all bindings for `event`,\n\
- * or all bindings within the manager.\n\
- *\n\
- * Examples:\n\
- *\n\
- *  Unbind direct handlers:\n\
- *\n\
- *     events.unbind('click', 'remove')\n\
- *     events.unbind('click')\n\
- *     events.unbind()\n\
- *\n\
- * Unbind delegate handlers:\n\
- *\n\
- *     events.unbind('click', 'remove')\n\
- *     events.unbind('click')\n\
- *     events.unbind()\n\
- *\n\
- * @param {String|Function} [event]\n\
- * @param {String|Function} [method]\n\
- * @api public\n\
- */\n\
-\n\
-Events.prototype.unbind = function(event, method){\n\
-  if (0 == arguments.length) return this.unbindAll();\n\
-  if (1 == arguments.length) return this.unbindAllOf(event);\n\
-\n\
-  // no bindings for this event\n\
-  var bindings = this._events[event];\n\
-  if (!bindings) return;\n\
-\n\
-  // no bindings for this method\n\
-  var cb = bindings[method];\n\
-  if (!cb) return;\n\
-\n\
-  events.unbind(this.el, event, cb);\n\
-};\n\
-\n\
-/**\n\
- * Unbind all events.\n\
- *\n\
- * @api private\n\
- */\n\
-\n\
-Events.prototype.unbindAll = function(){\n\
-  for (var event in this._events) {\n\
-    this.unbindAllOf(event);\n\
-  }\n\
-};\n\
-\n\
-/**\n\
- * Unbind all events for `event`.\n\
- *\n\
- * @param {String} event\n\
- * @api private\n\
- */\n\
-\n\
-Events.prototype.unbindAllOf = function(event){\n\
-  var bindings = this._events[event];\n\
-  if (!bindings) return;\n\
-\n\
-  for (var method in bindings) {\n\
-    this.unbind(event, method);\n\
-  }\n\
-};\n\
-\n\
-/**\n\
- * Parse `event`.\n\
- *\n\
- * @param {String} event\n\
- * @return {Object}\n\
- * @api private\n\
- */\n\
-\n\
-function parse(event) {\n\
-  var parts = event.split(/ +/);\n\
-  return {\n\
-    name: parts.shift(),\n\
-    selector: parts.join(' ')\n\
-  }\n\
-}\n\
-//@ sourceURL=component-events/index.js"
+};//@ sourceURL=component-event/index.js"
 ));
 require.register("component-emitter/index.js", Function("exports, require, module",
 "\n\
@@ -766,7 +466,7 @@ Emitter.prototype.hasListeners = function(event){\n\
 ));
 require.register("pager/index.js", Function("exports, require, module",
 "var Emitter = require('emitter');\n\
-var events = require('events');\n\
+var events = require('event');\n\
 var el = require('el');\n\
 \n\
 module.exports = Pager;\n\
@@ -778,8 +478,7 @@ function Pager(el) {\n\
   this._total = 0;\n\
   this._current = 0;\n\
   this.el = el;\n\
-  this.events = events(this.el, this);\n\
-  this.events.bind('click a');\n\
+  events.bind(el, 'click', this.onclick.bind(this));\n\
 }\n\
 \n\
 Emitter(Pager.prototype);\n\
@@ -791,7 +490,7 @@ Pager.prototype.total = function total(t) {\n\
 };\n\
 \n\
 Pager.prototype.onclick = function onclick(e) {\n\
-  var page, target = e.target || e.src;\n\
+  var page, target = e.target || e.srcElement;\n\
   page = Array.prototype.indexOf.call(this.el.children, target);\n\
   if (page < 0) {\n\
     return;\n\
@@ -801,7 +500,8 @@ Pager.prototype.onclick = function onclick(e) {\n\
   this.select(page);\n\
 };\n\
 \n\
-Pager.prototype.select = function select(page, silent) {\n\
+Pager.prototype.select = function select(page, opts) {\n\
+  var silent = opts && opts.silent;\n\
   if (page === this._current) {\n\
     return;\n\
   }\n\
@@ -838,20 +538,12 @@ Pager.prototype.render = function render() {\n\
 
 
 
-
 require.alias("code42day-el/index.js", "pager/deps/el/index.js");
 require.alias("code42day-el/index.js", "pager/deps/el/index.js");
 require.alias("code42day-el/index.js", "el/index.js");
 require.alias("code42day-el/index.js", "code42day-el/index.js");
-require.alias("component-events/index.js", "pager/deps/events/index.js");
-require.alias("component-events/index.js", "events/index.js");
-require.alias("component-event/index.js", "component-events/deps/event/index.js");
-
-require.alias("component-delegate/index.js", "component-events/deps/delegate/index.js");
-require.alias("component-matches-selector/index.js", "component-delegate/deps/matches-selector/index.js");
-require.alias("component-query/index.js", "component-matches-selector/deps/query/index.js");
-
-require.alias("component-event/index.js", "component-delegate/deps/event/index.js");
+require.alias("component-event/index.js", "pager/deps/event/index.js");
+require.alias("component-event/index.js", "event/index.js");
 
 require.alias("component-emitter/index.js", "pager/deps/emitter/index.js");
 require.alias("component-emitter/index.js", "emitter/index.js");
