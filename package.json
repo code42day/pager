@@ -1,6 +1,6 @@
 {
   "name": "code42day-pager",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "simple pager optionally without numbers",
   "scripts": {
     "test": "make check"
