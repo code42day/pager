@@ -5,9 +5,9 @@
 
 ## Installation
 
-  Install with [component(1)](http://component.io):
+  Install with npm:
 
-    $ component install code42day/pager
+    $ npm install -S code42day-pager
 
 ## API
 

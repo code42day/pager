@@ -1,0 +1,30 @@
+{
+  "name": "code42day-pager",
+  "version": "0.2.0",
+  "description": "simple pager optionally without numbers",
+  "scripts": {
+    "test": "make check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/code42day/pager.git"
+  },
+  "keywords": [
+    "browser"
+  ],
+  "dependencies": {
+    "el-component": "^0.1.0",
+    "component-event": "^0.1.2",
+    "component-emitter": "^1.1.1"
+  },
+  "browser": {
+    "el": "el-component",
+    "event": "component-event",
+    "emitter": "component-emitter"
+  },
+  "author": "Damian Krzeminski <pirxpilot@code42day.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/code42day/pager/issues"
+  }
+}

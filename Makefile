@@ -1,15 +1,31 @@
-all: lint build
+PROJECT=pager
+
+all: check compile
+
+check: lint
 
 lint:
 	jshint index.js
 
-build: components index.js pager.css
-	@component build --dev
+compile: build/build.js build/build.css
 
-components: component.json
-	@component install --dev
+build:
+	mkdir -p $@
+
+build/build.js: node_modules index.js | build
+	browserify --require ./index.js:$(PROJECT) --outfile $@
+
+.DELETE_ON_ERROR: build/build.js
+
+build/build.css: \
+	pager.css \
+	| build
+	cat $^ > $@
+
+node_modules: package.json
+	npm install
 
 clean:
-	rm -fr build components
+	rm -fr build node_modules
 
-.PHONY: clean lint all
+.PHONY: clean lint check all build
