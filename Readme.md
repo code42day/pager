@@ -1,20 +1,20 @@
 # pager
 
   Simple pager optionally without numbers.
-  Demo is [here](http://code42day.github.io/pager/)
+  Demo is [here](http://pirxpilot.github.io/pager/)
 
 ## Installation
 
   Install with npm:
 
-    $ npm install -S code42day-pager
+    $ npm install -S tiny-pager
 
 ## API
 
 You need a DOM element with `.pager` class to create pager. See [example](example.html)
 
 ```js
-var pager = require('pager');
+var pager = require('tiny-pager');
 var numeric = pager(document.querySelector('.numeric')).total(5).render();
 ```
 
