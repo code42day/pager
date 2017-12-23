@@ -23,5 +23,9 @@
     "emitter": "component-emitter"
   },
   "author": "Damian Krzeminski <pirxpilot@furkot.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "pager.css"
+  ]
 }
