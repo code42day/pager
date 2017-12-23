@@ -1,5 +1,4 @@
 var Emitter = require('emitter');
-var events = require('event');
 var el = require('el');
 
 module.exports = Pager;
@@ -11,7 +10,7 @@ function Pager(el) {
   this._total = 0;
   this._current = 0;
   this.el = el;
-  events.bind(el, 'click', this.onclick.bind(this));
+  el.addEventListener('click', this.onclick.bind(this));
 }
 
 Emitter(Pager.prototype);

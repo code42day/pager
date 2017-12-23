@@ -14,12 +14,10 @@
   ],
   "dependencies": {
     "el-component": "^1.0.1",
-    "component-event": "^0.1.2",
     "component-emitter": "^1.1.1"
   },
   "browser": {
     "el": "el-component",
-    "event": "component-event",
     "emitter": "component-emitter"
   },
   "author": "Damian Krzeminski <pirxpilot@furkot.com>",
