@@ -1,4 +1,10 @@
 
+1.0.0 / 2017-12-23
+==================
+
+ * remove component-event dependency
+ * replace .npmignore with package.files
+
 0.2.3 / 2017-03-09
 ==================
 

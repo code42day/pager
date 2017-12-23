@@ -1,6 +1,6 @@
 {
   "name": "tiny-pager",
-  "version": "0.2.3",
+  "version": "1.0.0",
   "description": "simple pager optionally without numbers",
   "scripts": {
     "test": "make check"
